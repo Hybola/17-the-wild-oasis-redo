@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
+import { useDeleteCabin } from "./useDeleteCabin";
 
 const TableRow = styled.div`
   display: grid;
@@ -40,7 +41,8 @@ const Discount = styled.div`
   color: var(--color-green-700);
 `;
 function CabinRow({ cabin }) {
-  const { image, name, maxCapacity, regularPrice, discount } = cabin;
+  const { id, image, name, maxCapacity, regularPrice, discount } = cabin;
+  const { isDeleting, deleteCabin } = useDeleteCabin();
   return (
     <TableRow>
       <Img src={image} />
@@ -48,7 +50,9 @@ function CabinRow({ cabin }) {
       <div>Fits up to {maxCapacity} guests</div>
       <Price>{formatCurrency(regularPrice)}</Price>
       <Discount>{formatCurrency(discount)}</Discount>
-      <button>delete</button>
+      <button disabled={isDeleting} onClick={() => deleteCabin(id)}>
+        delete
+      </button>
     </TableRow>
   );
 }
