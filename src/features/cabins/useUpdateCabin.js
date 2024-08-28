@@ -9,7 +9,7 @@ export function useUpdateCabin() {
     onSuccess: () => {
       toast.success("A cabin is successfully updated");
       queryClient.invalidateQueries({
-        queryKey: ["cabin"],
+        queryKey: ["cabins"],
       });
     },
     onError: (err) => toast.error(err.message),
