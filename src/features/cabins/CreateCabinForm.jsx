@@ -4,20 +4,31 @@ import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
-import useCreateCabin from "./useCreateCabin";
 import FormRow from "../../ui/FormRow";
+import useCreateCabin from "./useCreateCabin";
+import { useUpdateCabin } from "./useUpdateCabin";
 
-function CreateCabinForm() {
-  const { register, handleSubmit, reset, formState, getValues } = useForm();
+function CreateCabinForm({ toUpdateCabin = {} }) {
+  const { id } = toUpdateCabin;
+  const isUpdateSession = Boolean(id);
+
+  const { register, handleSubmit, reset, formState, getValues } = useForm({
+    defaultValues: isUpdateSession ? toUpdateCabin : {},
+  });
   const { errors } = formState;
   const { isCreating, createCabin } = useCreateCabin();
-  const isWorking = isCreating;
+  const { isUpdating, updateCabin } = useUpdateCabin();
+  const isWorking = isCreating || isUpdating;
+
   function onSubmit(data) {
     // console.log(data);
-    createCabin(
-      { ...data, image: data.image[0] },
-      { onSuccess: () => reset() }
-    );
+    const image = typeof data.image === "string" ? data.image : data.image[0];
+    if (isUpdateSession)
+      updateCabin(
+        { newCabinData: { ...data, image }, id },
+        { onSuccess: () => reset() }
+      );
+    else createCabin({ ...data, image: image }, { onSuccess: () => reset() });
   }
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -93,7 +104,9 @@ function CreateCabinForm() {
         <FileInput
           id="image"
           accept="image/*"
-          {...register("image", { required: "This input field is required" })}
+          {...register("image", {
+            required: isUpdateSession ? false : "This input field is required",
+          })}
         />
       </FormRow>
 
@@ -102,7 +115,9 @@ function CreateCabinForm() {
         <Button $variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button disabled={isCreating}>Create cabin</Button>
+        <Button disabled={isCreating}>
+          {isUpdateSession ? "Save Edit" : "Create Cabin "}
+        </Button>
       </FormRow>
     </Form>
   );
