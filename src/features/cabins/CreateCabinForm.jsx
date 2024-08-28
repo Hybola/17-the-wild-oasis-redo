@@ -1,5 +1,3 @@
-import styled from "styled-components";
-
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
@@ -15,7 +13,11 @@ function CreateCabinForm() {
   const { isCreating, createCabin } = useCreateCabin();
   const isWorking = isCreating;
   function onSubmit(data) {
-    createCabin(data, { onSuccess: () => reset() });
+    // console.log(data);
+    createCabin(
+      { ...data, image: data.image[0] },
+      { onSuccess: () => reset() }
+    );
   }
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -88,7 +90,11 @@ function CreateCabinForm() {
       </FormRow>
 
       <FormRow label="Cabin photo" error={errors?.image?.message}>
-        <FileInput id="image" accept="image/*" {...register("image")} />
+        <FileInput
+          id="image"
+          accept="image/*"
+          {...register("image", { required: "This input field is required" })}
+        />
       </FormRow>
 
       <FormRow>
