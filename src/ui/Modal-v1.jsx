@@ -51,38 +51,19 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
-const ModalContext = createContext();
-function Modal({ children }) {
-  const [openName, setOpenName] = useState("");
-  const open = setOpenName;
-  const close = () => setOpenName("");
-  return (
-    <ModalContext.Provider value={{ openName, open, close }}>
-      {children}
-    </ModalContext.Provider>
-  );
-}
-function Open({ children, opens }) {
-  const { open } = useContext(ModalContext);
-  return cloneElement(children, { onClick: () => open(opens) });
-}
-function Window({ children, name }) {
-  const { openName, close } = useContext(ModalContext);
-  if (openName !== name) return null;
-
+function Modal({ children, onClose }) {
   return createPortal(
     <Overlay>
       <StyledModal>
-        <Button onClick={close}>
+        <Button onClick={onClose}>
           <HiXMark />
         </Button>
-        <div>{cloneElement(children, { onCloseModal: close })}</div>
+        <div>{children}</div>
       </StyledModal>
+      ;
     </Overlay>,
     document.body
   );
 }
-Modal.Open = Open;
-Modal.Window = Window;
 
 export default Modal;
