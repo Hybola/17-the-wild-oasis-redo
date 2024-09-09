@@ -8,6 +8,11 @@ import Button from "../../ui/Button";
 import ButtonText from "../../ui/ButtonText";
 
 import { useMoveBack } from "../../hooks/useMoveBack";
+import { useBooking } from "../bookings/useBooking";
+import Spinner from "../../ui/Spinner";
+import CheckBox from "../../ui/CheckBox";
+import { useEffect, useState } from "react";
+import { useCheckin } from "./useCheckin";
 
 const Box = styled.div`
   /* Box */
@@ -19,9 +24,11 @@ const Box = styled.div`
 
 function CheckinBooking() {
   const moveBack = useMoveBack();
-
-  const booking = {};
-
+  const { isLoading, booking } = useBooking();
+  const { checkin, isCheckingIn } = useCheckin();
+  const [confirmPaid, setConfirmPaid] = useState(false);
+  useEffect(() => setConfirmPaid(booking?.isPaid ?? false), [booking]);
+  if (isLoading) return <Spinner />;
   const {
     id: bookingId,
     guests,
@@ -29,9 +36,14 @@ function CheckinBooking() {
     numGuests,
     hasBreakfast,
     numNights,
+    status,
+    isPaid,
   } = booking;
 
-  function handleCheckin() {}
+  function handleCheckin() {
+    if (!confirmPaid) return;
+    checkin(bookingId);
+  }
 
   return (
     <>
@@ -41,10 +53,26 @@ function CheckinBooking() {
       </Row>
 
       <BookingDataBox booking={booking} />
+      <Box>
+        <CheckBox
+          checked={confirmPaid}
+          disabled={isPaid || isCheckingIn}
+          id="confirm"
+          onChange={() => setConfirmPaid((paid) => !paid)}>
+          i confirm that {guests.fullName} has paid the total amount{" "}
+          {totalPrice}
+        </CheckBox>
+      </Box>
 
       <ButtonGroup>
-        <Button onClick={handleCheckin}>Check in booking #{bookingId}</Button>
-        <Button variation="secondary" onClick={moveBack}>
+        <Button
+          disabled={!confirmPaid || status === "checked-in" || isCheckingIn}
+          onClick={handleCheckin}>
+          {status === "checked-in"
+            ? "Already Checked in"
+            : `Check in booking #${bookingId}`}
+        </Button>
+        <Button $variation="secondary" onClick={moveBack}>
           Back
         </Button>
       </ButtonGroup>
