@@ -12,6 +12,10 @@ export function useBookings() {
       : { field: "status", value: filterValue };
 
   ///>>>SORT
+  const sortByRaw = searchParams.get("sortBy") || "startDate-desc";
+  const [field, direction] = sortByRaw.split("-");
+  const sortBy = { field, direction };
+
   //>>>> PAGINATION
   //FETCHING API
   const {
@@ -19,8 +23,8 @@ export function useBookings() {
     data: bookings,
     error,
   } = useQuery({
-    queryKey: ["bookings", filter],
-    queryFn: () => getBookings({ filter }),
+    queryKey: ["bookings", filter, sortBy],
+    queryFn: () => getBookings({ filter, sortBy }),
   });
   //PRE-FETCHING
   return { isLoading, bookings, error };
