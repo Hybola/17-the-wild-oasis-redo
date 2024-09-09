@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getBookings } from "../../services/apiBookings";
 import { useSearchParams } from "react-router-dom";
+import { PAGE_SIZE } from "../../utils/constansts";
 
 export function useBookings() {
   const [searchParams] = useSearchParams();
@@ -17,15 +18,18 @@ export function useBookings() {
   const sortBy = { field, direction };
 
   //>>>> PAGINATION
-  //FETCHING API
+  const page = Number(searchParams.get("page")) || 1;
+
+  //QUERY
   const {
     isLoading,
-    data: bookings,
+    data: { data: bookings, count } = {},
     error,
   } = useQuery({
-    queryKey: ["bookings", filter, sortBy],
-    queryFn: () => getBookings({ filter, sortBy }),
+    queryKey: ["bookings", filter, sortBy, page],
+    queryFn: () => getBookings({ filter, sortBy, page }),
   });
+
   //PRE-FETCHING
-  return { isLoading, bookings, error };
+  return { isLoading, bookings, count, error };
 }
