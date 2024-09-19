@@ -17,7 +17,7 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     if (!isAuthenticated && !isLoading && !isFetching) navigate("/login");
   }, [isAuthenticated, isLoading, isFetching, navigate]);
-  if (isLoading || isFetching)
+  if (isLoading)
     return (
       <FullPage>
         <Spinner />
