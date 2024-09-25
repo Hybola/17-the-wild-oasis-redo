@@ -15,5 +15,5 @@ export function useRecentStays() {
     (booking) =>
       booking.status === "checked-in" || booking.status === "checked-out"
   );
-  return { stays, isLoading, confirmedStays };
+  return { stays, isLoading, confirmedStays, numDays };
 }
