@@ -62,6 +62,7 @@ function SalesChart({ bookings, numDays }) {
     start: subDays(new Date(), numDays - 1),
     end: new Date(),
   });
+
   //2. Combine the bookings data with the interval dates
   const data = allDates.map((date) => {
     return {
@@ -91,7 +92,10 @@ function SalesChart({ bookings, numDays }) {
 
   return (
     <StyledSalesChart>
-      <Heading as="h2">Sales</Heading>
+      <Heading as="h2">
+        Sales from {format(allDates.at(0), "dd MMM yyyy")} &mdash;{" "}
+        {format(allDates.at(-1), "dd MMM yyyy")}
+      </Heading>
       <ResponsiveContainer height={300} width="100%">
         <AreaChart data={data}>
           <CartesianGrid strokeDasharray="4" />
